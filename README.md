@@ -1,22 +1,28 @@
-WooCommerce Wishlist Plugin
+# WooCommerce Wishlist Plugin
+
 This is a simple and powerful plugin for creating a wishlist system in WooCommerce stores. The plugin allows users to add their favorite products to a wishlist and view them easily. By using the provided shortcodes, you can quickly display the "Add to Wishlist" button and also show the complete list of favorite products on different pages of your site.
 
-Features
-Add products to wishlist: Users can add their favorite products to the wishlist.
-Display wishlist: Easily display a list of all the products saved in the wishlist using a shortcode.
-Simple to use: Quick installation and setup for use on WooCommerce stores.
-Customizable shortcodes: Easily customize where the button and wishlist list are displayed across different pages of your site.
-Installation
-Download the project from GitHub.
-Upload the files to the wp-content/themes/...your theme  directory on your WordPress site.
-add this code to function.php 
-require_once get_template_directory() . '/whish-list.php';
+## Features
+
+- **Add products to wishlist**: Users can add their favorite products to the wishlist.
+- **Display wishlist**: Easily display a list of all the products saved in the wishlist using a shortcode.
+- **Simple to use**: Quick installation and setup for use on WooCommerce stores.
+- **Customizable shortcodes**: Easily customize where the button and wishlist list are displayed across different pages of your site.
+
+## Installation
+
+1. Download the project from GitHub.
+2. Upload the files to the `wp-content/themes/...your theme` directory on your WordPress site.
+3. Add the following code to your `functions.php` file:
+
+``` require_once get_template_directory() . '/whish-list.php'; ```
+ 
 
 To display the "Add to Wishlist" button on different pages, use the following shortcode:
-[wishlist_button]
+``[wishlist_button]``
 
 To display the entire wishlist, use the following shortcode:
-[wishlist_display]
+``[wishlist_display]``
 
 Usage
 Adding the Wishlist Button
