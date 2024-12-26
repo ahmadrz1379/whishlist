@@ -131,43 +131,35 @@ function display_wishlist()
 add_shortcode('wishlist_display', 'display_wishlist');
 
 
-
-function add_wishlist_endpoint()
-{
+// 1. Add new endpoint for "Wish List"
+function add_wishlist_endpoint() {
     add_rewrite_endpoint('wish-list', EP_ROOT | EP_PAGES);
 }
-
 add_action('init', 'add_wishlist_endpoint');
 
-// ------------------
-// 2. Add new query var
-
-function wishlist_query_var($vars)
-{
+// 2. Add the new query var
+function wishlist_query_var($vars) {
     $vars[] = 'wish-list';
     return $vars;
 }
-
 add_filter('query_vars', 'wishlist_query_var', 0);
 
-// ------------------
 // 3. Insert the new endpoint into the My Account menu
-
-function wishlist_profile_page($items)
-{
-    $items['whish list'] = 'علاقه مندی ها';
+function wishlist_profile_page($items) {
+    $items['wish-list'] = __('Wish List', 'your-text-domain'); // Replace 'your-text-domain' with your theme/plugin text domain
     return $items;
 }
-
 add_filter('woocommerce_account_menu_items', 'wishlist_profile_page');
 
-// ------------------
 // 4. Add content to the new tab
-
-function whishlist_content_tab()
-{
-    echo do_shortcode('[wishlist_display]');
+function wishlist_content_tab() {
+    echo do_shortcode('[wishlist_display]'); // Replace with your desired shortcode or content
 }
+add_action('woocommerce_account_wish-list_endpoint', 'wishlist_content_tab');
 
-add_action('woocommerce_account_premium-support_endpoint', 'whishlist_content_tab');
- 
+// 5. Flush rewrite rules (only required once, after adding the new endpoint)
+function wishlist_flush_rewrite_rules() {
+    add_wishlist_endpoint();
+    flush_rewrite_rules();
+}
+register_activation_hook(__FILE__, 'wishlist_flush_rewrite_rules');
