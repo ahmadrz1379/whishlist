@@ -83,82 +83,168 @@ function display_wishlist()
 
     $user_id = get_current_user_id();
     $wishlist = get_user_meta($user_id, 'user_wishlist', true);
-
+    $nonce = wp_create_nonce('wishlist_nonce');
     if (empty($wishlist) || !is_array($wishlist)) {
         return '<p>Your wishlist is empty.</p>';
     }
 
     ob_start();
 ?>
-    <ul id="wishlist-container">
-        <?php foreach ($wishlist as $post_id): ?>
-            <?php if (get_post($post_id)): ?>
-                <li data-id="<?= esc_attr($post_id) ?>" class="wishlist-item">
-                    <?php
-                    // Get product object
-                    $product = wc_get_product($post_id);
-                    if ($product):
-                        // Get product details
-                        $thumbnail = $product->get_image(); // Product thumbnail HTML
-                        $price = $product->get_price_html(); // Formatted price
-                        $regular_price = $product->get_regular_price(); // Regular price
-                        $sale_price = $product->get_sale_price(); // Sale price
-                        $url = get_permalink($post_id); // Product URL
-                        $stock_status = $product->is_in_stock() ? 'In Stock' : 'Out of Stock'; // Stock status
-                    ?>
-                        <!-- Display product details -->
-                        <div class="wishlist-product-thumbnail">
-                            <a href="<?= esc_url($url) ?>"><?= $thumbnail ?></a>
-                        </div>
-                        <div class="wishlist-product-details">
-                            <h3><a href="<?= esc_url($url) ?>"><?= esc_html(get_the_title($post_id)) ?></a></h3>
-                            <p>Price: <?= $price ?></p>
-                            <?php if ($sale_price): ?>
-                                <p>Discount Price: <del><?= wc_price($regular_price) ?></del> <?= wc_price($sale_price) ?></p>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <section class="container_swiper_wishlist">
+        <div class="whishlist_perv ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <mask id="mask0_1118_601" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                    <rect x="24" y="24" width="24" height="24" transform="rotate(-180 24 24)" fill="#D9D9D9" />
+                </mask>
+                <g mask="url(#mask0_1118_601)">
+                    <path d="M9.59961 6L15.5996 12L9.59961 18L8.32461 16.725L13.0496 12L8.32461 7.275L9.59961 6Z" fill="#EF9E07" />
+                </g>
+            </svg>
+        </div>
+        <div class="swiper-container wishlist-swiper swiper col-12">
+            <div class="swiper-wrapper">
+                <?php foreach ($wishlist as $post_id): ?>
+                    <?php if (get_post($post_id)): ?>
+                        <div class="swiper-slide" data-id="<?= esc_attr($post_id) ?>">
+                            <?php
+                            // Get product object
+                            $product = wc_get_product($post_id);
+                            if ($product):
+                                // Get product details
+                                $thumbnail = $product->get_image([216, 216], ['class' => 'image_whishlist']); // Product thumbnail HTML
+                                $price = $product->get_price_html(); // Formatted price
+                                $regular_price = $product->get_regular_price(); // Regular price
+                                $sale_price = $product->get_sale_price(); // Sale price
+                                $url = get_permalink($post_id); // Product URL
+                                $stock_status = $product->is_in_stock() ? true : false; // Stock status
+                            ?>
+                                <div class="wishlist-product">
+                                    <button class="remove-from-wishlist"  data-nonce="<?=esc_attr($nonce)?>" data-id="<?= esc_attr($post_id) ?>">حذف
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
+                                            <mask id="mask0_1118_6173" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="25" height="24">
+                                                <rect x="0.5" width="24" height="24" fill="#D9D9D9" />
+                                            </mask>
+                                            <g mask="url(#mask0_1118_6173)">
+                                                <path d="M6.9 19L5.5 17.6L11.1 12L5.5 6.4L6.9 5L12.5 10.6L18.1 5L19.5 6.4L13.9 12L19.5 17.6L18.1 19L12.5 13.4L6.9 19Z" fill="#A91F02" />
+                                            </g>
+                                        </svg>
+                                    </button>
+                                    <div class="wishlist-product-thumbnail <?= $stock_status ? null : 'out_of_stock_wishlist' ?>">
+                                        <a href="<?= esc_url($url) ?>"><?= $thumbnail ?></a>
+                                    </div>
+                                    <div class="wishlist-product-details">
+                                        <div class="container_price_wishliste <?= $stock_status ? null : 'out_of_stock_wishlist' ?>">
+                                            <h3><a href="<?= esc_url($url) ?>" class="line_clamp_1"><?= esc_html(get_the_title($post_id)) ?></a></h3>
+                                            <p class="price_whishlist"><?= $price ?></p>
+                                        </div>
+                                        <?php if ($sale_price): ?>
+                                            <!-- <p>Discount Price: <del><?= wc_price($regular_price) ?></del> <?= wc_price($sale_price) ?></p> -->
+                                        <?php endif; ?>
+                                        <?php
+                                        if ($stock_status === false) {  ?>
+                                            <p class="outofstock_text"><?= 'ناموجود' ?></p>
+                                        <?php } elseif (true === $stock_status) {  ?>
+                                            <a class="wishlist_product_view" href="<?= esc_url($url) ?>"><?= 'مشاهده محصول' ?></a>
+                                        <?php } ?>
+                                    </div>
+
+                                </div>
                             <?php endif; ?>
-                            <p>Stock Status: <?= esc_html($stock_status) ?></p>
                         </div>
-                        <button class="remove-from-wishlist" data-id="<?= esc_attr($post_id) ?>">Remove</button>
                     <?php endif; ?>
-                </li>
-            <?php endif; ?>
-        <?php endforeach; ?>
-    </ul>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <div class="whishlist_next">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <mask id="mask0_1118_1265" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                    <rect width="24" height="24" fill="#D9D9D9" />
+                </mask>
+                <g mask="url(#mask0_1118_1265)">
+                    <path d="M14.4004 18L8.40039 12L14.4004 6L15.6754 7.275L10.9504 12L15.6754 16.725L14.4004 18Z" fill="#EF9E07" />
+                </g>
+            </svg>
+        </div>
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const swiper = new Swiper('.wishlist-swiper', {
+                slidesPerView: 1, // Adjust number of visible slides
+                spaceBetween: 10, // Space between slides
+                navigation: {
+                    nextEl: '.whishlist_next',
+                    prevEl: '.whishlist_perv',
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 12,
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 24,
+                    },
+                },
+            });
+        });
+    </script>
 <?php
     return ob_get_clean();
 }
+
 
 add_shortcode('wishlist_display', 'display_wishlist');
 
 
 // 1. Add new endpoint for "Wish List"
-function add_wishlist_endpoint() {
+function add_wishlist_endpoint()
+{
     add_rewrite_endpoint('wish-list', EP_ROOT | EP_PAGES);
 }
 add_action('init', 'add_wishlist_endpoint');
 
 // 2. Add the new query var
-function wishlist_query_var($vars) {
+function wishlist_query_var($vars)
+{
     $vars[] = 'wish-list';
     return $vars;
 }
 add_filter('query_vars', 'wishlist_query_var', 0);
 
 // 3. Insert the new endpoint into the My Account menu
-function wishlist_profile_page($items) {
-    $items['wish-list'] = __('Wish List', 'your-text-domain'); // Replace 'your-text-domain' with your theme/plugin text domain
-    return $items;
+function wishlist_profile_page($items)
+{
+    $new_items = array();
+    foreach ($items as $key => $value) {
+        $new_items[$key] = $value; // اضافه کردن آیتم‌های پیش‌فرض
+        if ($key === 'orders') { // بررسی تب سفارش‌ها
+            $new_items['wish-list'] = __('علاقه‌مندی‌ها', 'your-text-domain'); // افزودن تب علاقه‌مندی‌ها
+        }
+    }
+
+    return $new_items;
 }
 add_filter('woocommerce_account_menu_items', 'wishlist_profile_page');
 
 // 4. Add content to the new tab
-function wishlist_content_tab() {
+function wishlist_content_tab()
+{
     echo do_shortcode('[wishlist_display]'); // Replace with your desired shortcode or content
 }
 add_action('woocommerce_account_wish-list_endpoint', 'wishlist_content_tab');
 
 // 5. Flush rewrite rules (only required once, after adding the new endpoint)
-function wishlist_flush_rewrite_rules() {
+function wishlist_flush_rewrite_rules()
+{
     add_wishlist_endpoint();
     flush_rewrite_rules();
 }
